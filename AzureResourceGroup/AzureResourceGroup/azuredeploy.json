@@ -1,0 +1,377 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "Location": {
+      "type": "string",
+      "allowedValues": [
+        "East Asia",
+        "southeastasia",
+        "centralus",
+        "East US",
+        "East US 2",
+        "West US",
+        "West US 2",
+        "North Central US",
+        "southcentralus",
+        "North Europe",
+        "West Europe",
+        "Brazil South",
+        "australiaeast",
+        "australiasoutheast",
+        "canadacentral",
+        "canadaeast",
+        "uksouth",
+        "ukwest",
+        "westcentralus"
+      ],
+      "metadata": {
+        "description": "Azure Location. Please Note not all Azure features are in all locations."
+      }
+    },
+    "Storage_Name": {
+      "type": "string"
+    },
+    "Storage_Type": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "Machine_Name": {
+      "type": "string",
+      "minLength": 5
+    },
+    "User_Name": {
+      "type": "string",
+      "minLength": 4
+    },
+    "Admin_Password": {
+      "type": "securestring",
+      "minLength": 10
+    },
+    "Windows_Edition": {
+      "type": "string",
+      "allowedValues": [
+        "2008-R2-SP1",
+        "2012-Datacenter",
+        "2012-R2-Datacenter",
+        "2012-R2-Datacenter-BYOL",
+        "2016-Datacenter",
+        "2016-Datacenter-with-Containers",
+        "2016-Nano-Server"
+      ]
+    },
+    "VM_Size": {
+      "type": "string",
+      "allowedValues": [
+        "Basic_A0",
+        "Basic_A1",
+        "Basic_A2",
+        "Basic_A3",
+        "Basic_A4",
+        "Standard_A0",
+        "Standard_A1",
+        "Standard_A2",
+        "Standard_A3",
+        "Standard_A5",
+        "Standard_A4",
+        "Standard_A6",
+        "Standard_A7",
+        "Standard_A1_v2",
+        "Standard_A2m_v2",
+        "Standard_A2_v2",
+        "Standard_A4m_v2",
+        "Standard_A4_v2",
+        "Standard_A8m_v2",
+        "Standard_A8_v2",
+        "Standard_D1",
+        "Standard_D2",
+        "Standard_D3",
+        "Standard_D4",
+        "Standard_D11",
+        "Standard_D12",
+        "Standard_D13",
+        "Standard_D14",
+        "Standard_DS1",
+        "Standard_DS2",
+        "Standard_DS3",
+        "Standard_DS4",
+        "Standard_DS11",
+        "Standard_DS12",
+        "Standard_DS13",
+        "Standard_DS14",
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2",
+        "Standard_D11_v2",
+        "Standard_D12_v2",
+        "Standard_D13_v2",
+        "Standard_D14_v2",
+        "Standard_D15_v2",
+        "Standard_DS1_v2",
+        "Standard_DS2_v2",
+        "Standard_DS3_v2",
+        "Standard_DS4_v2",
+        "Standard_DS5_v2",
+        "Standard_DS11_v2",
+        "Standard_DS12_v2",
+        "Standard_DS13_v2",
+        "Standard_DS14_v2",
+        "Standard_DS15_v2",
+        "Standard_F1",
+        "Standard_F2",
+        "Standard_F4",
+        "Standard_F8",
+        "Standard_F16",
+        "Standard_F1s",
+        "Standard_F2s",
+        "Standard_F4s",
+        "Standard_F8s",
+        "Standard_F16s",
+        "Standard_G1",
+        "Standard_G2",
+        "Standard_G3",
+        "Standard_G4",
+        "Standard_G5",
+        "Standard_GS1",
+        "Standard_GS2",
+        "Standard_GS3",
+        "Standard_GS4",
+        "Standard_GS5",
+        "Standard_H8",
+        "Standard_H16",
+        "Standard_H8m",
+        "Standard_H16m",
+        "Standard_H16r",
+        "Standard_H16mr",
+        "Standard_NV6",
+        "Standard_NV12",
+        "Standard_NV24",
+        "Standard_NC6",
+        "Standard_NC12",
+        "Standard_NC24",
+        "Standard_NC24r",
+        "Standard_A8",
+        "Standard_A9",
+        "Standard_A10",
+        "Standard_A11"
+      ]
+    },
+    "Virtual_Network_Name": {
+      "type": "string"
+    },
+    "Virtual_Network_Resource_Group": {
+      "type": "string"
+    },
+    "Virtual_Network_SubNet": {
+      "type": "string"
+    },
+    "Static_IP": {
+      "type": "string"
+    },
+    "Alerts_Email": {
+      "type": "string",
+      "defaultValue": "wleuro@live.com;william.leuro@softwareone.com"
+    },
+    "TAG_KEY1": {
+      "type": "string"
+    },
+    "TAG_VALUE1": {
+      "type": "string"
+    },
+    "TAG_KEY2": {
+      "type": "string"
+    },
+    "TAG_VALUE2": {
+      "type": "string"
+    },
+    "Diagnostic_Storage": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of an existing storage account to which diagnostics data will be saved."
+      }
+    },
+    "Diagnostic_Storage_Resource_Group": {
+      "type": "string",
+      "metadata": {
+        "description": "The resource group that contains the Diagnostic_Storage"
+      }
+    }
+  },
+  "variables": {
+    "apiVersion": "2015-06-15",
+    "location": "[parameters('Location')]",
+    "stg01Name": "[parameters('Storage_Name')]",
+    "vmwrs01ImagePublisher": "MicrosoftWindowsServer",
+    "vmwrs01ImageOffer": "WindowsServer",
+    "vmwrs01OSDiskName": "[concat (parameters('Machine_Name'),'-OS')]",
+    "vmwrs01VnetID": "[resourceId(parameters('Virtual_Network_Resource_Group'), 'Microsoft.Network/virtualNetworks', parameters('Virtual_Network_Name'))]",
+    "vmwrs01SubnetRef": "[concat(variables('vmwrs01VnetID'), '/subnets/', parameters('Virtual_Network_SubNet'))]",
+    "vmwrs01StorageAccountContainerName": "vhds",
+    "vmwrs01NicName": "[concat (parameters('Machine_Name'),'-NIC')]",
+    "datadisk01": "[concat (parameters('Machine_Name'),'-DATA-01')]",
+    "accountid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/',parameters('Diagnostic_Storage_Resource_Group'), '/providers/','Microsoft.Storage/storageAccounts/', parameters('Diagnostic_Storage'))]",
+    "wadcfgxstart": "[concat(variables('wadlogs'),variables('wadperfcounters'),'<Metrics resourceId=\"')]",
+    "wadcfgxend": "\"><MetricAggregation scheduledTransferPeriod=\\\"PT1H\\\"/><MetricAggregation scheduledTransferPeriod=\\\"PT1M\\\"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>",
+    "wadmetricsresourceid": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name , '/providers/', 'Microsoft.Compute/virtualMachines/')]",
+    "wadlogs": "<WadCfg><DiagnosticMonitorConfiguration overallQuotaInMB=\"4096\" xmlns=\"http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration\"><DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter=\"Error\"/><WindowsEventLog scheduledTransferPeriod=\"PT1M\" ><DataSource name=\"Application!*[System[(Level = 1 or Level = 2)]]\" /><DataSource name=\"Security!*[System[(Level = 1 or Level = 2)]]\" /><DataSource name=\"System!*[System[(Level = 1 or Level = 2)]]\" /></WindowsEventLog>",
+    "wadperfcounters": "<PerformanceCounters scheduledTransferPeriod=\"PT1M\"><PerformanceCounterConfiguration counterSpecifier=\"\\Process(_Total)\\Thread Count\" sampleRate=\"PT15S\" unit=\"Count\"><annotation displayName=\"Threads\" locale=\"en-us\"/></PerformanceCounterConfiguration></PerformanceCounters>",
+    "alerttype1": "[concat ('CPU ALTA EN SERVIDOR ', parameters('Machine_Name'))]",
+    "alerttype2": "[concat('MEMORIA ALTA ',parameters('Machine_Name'))]",
+    "vmID": "[resourceId('Microsoft.Compute/virtualMachines',parameters('Machine_Name'))]",
+    "metricName": "Percentage CPU Guest OS",
+    "metricName2": "Percentage Memory",
+    "alertIsEnabled": true,
+    "sendToServiceOwners": false,
+    "operator": "GreaterThan",
+    "threshold": "80",
+    "windowSize": "PT5M",
+    "aggregation": "Average"
+
+  },
+  "resources": [
+    {
+      "name": "[variables('stg01Name')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [],
+      "tags": {
+        "[parameters('TAG_KEY1')]": "[parameters('TAG_VALUE1')]",
+        "[parameters('TAG_KEY2')]": "[parameters('TAG_VALUE2')]"
+      },
+      "properties": {
+        "accountType": "[parameters('Storage_Type')]"
+      }
+    },
+    {
+      "name": "[variables('vmwrs01NicName')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[variables('location')]",
+      "apiVersion": "2016-03-30",
+      "dependsOn": [],
+      "tags": {
+        "[parameters('TAG_KEY1')]": "[parameters('TAG_VALUE1')]",
+        "[parameters('TAG_KEY2')]": "[parameters('TAG_VALUE2')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('Static_IP')]",
+              "subnet": {
+                "id": "[variables('vmwrs01SubnetRef')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('Machine_Name')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "[variables('location')]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('stg01Name'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('vmwrs01NicName'))]"
+      ],
+      "tags": {
+        "[parameters('TAG_KEY1')]": "[parameters('TAG_VALUE1')]",
+        "[parameters('TAG_KEY2')]": "[parameters('TAG_VALUE2')]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('VM_Size')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('Machine_Name')]",
+          "adminUsername": "[parameters('User_Name')]",
+          "adminPassword": "[parameters('Admin_Password')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[variables('vmwrs01ImagePublisher')]",
+            "offer": "[variables('vmwrs01ImageOffer')]",
+            "sku": "[parameters('Windows_Edition')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat (parameters('Machine_Name'),'-OS')]",
+            "vhd": {
+              "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts', variables('stg01Name')), '2016-01-01').primaryEndpoints.blob, variables('vmwrs01StorageAccountContainerName'), '/', variables('vmwrs01OSDiskName'), '.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "name": "[variables('datadisk01')]",
+              "vhd": {
+                "uri": "[concat(reference(resourceId('Microsoft.Storage/storageAccounts', variables('stg01Name')), '2016-01-01').primaryEndpoints.blob, variables('vmwrs01StorageAccountContainerName'), '/', variables('datadisk01'), '.vhd')]"
+              },
+              "caching": "none",
+              "diskSizeGB": "50",
+              "createOption": "Empty",
+              "lun": 0
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('vmwrs01NicName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageuri": "[concat('http://', parameters('Diagnostic_Storage'), '.blob.core.windows.net')]"
+          }
+        }
+      },
+
+      "resources": [
+        {
+          "name": "Microsoft.Insights.VMDiagnosticsSettings",
+          "type": "extensions",
+          "location": "[variables('location')]",
+          "apiVersion": "2016-03-30",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', parameters('Machine_Name'))]"
+          ],
+          "tags": {
+            "displayName": "AzureDiagnostics"
+          },
+          "properties": {
+            "publisher": "Microsoft.Azure.Diagnostics",
+            "type": "IaaSDiagnostics",
+            "typeHandlerVersion": "1.5",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "xmlCfg": "[base64(concat(variables('wadcfgxstart'), variables('wadmetricsresourceid'), concat('myVM', variables('wadcfgxend'))))]"
+            },
+            "protectedSettings": {
+              "storageAccountName": "[parameters('Diagnostic_Storage')]",
+              "storageAccountKey": "[listkeys(variables('accountid'), variables('apiVersion')).key1]",
+              "storageAccountEndPoint": "https://core.windows.net"
+            }
+          }
+        }
+      ]
+    },
+    
+  ],
+
+  "outputs": {}
+}
